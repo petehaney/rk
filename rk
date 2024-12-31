@@ -354,8 +354,6 @@
   <div id="login-btn-toolbar">
     <button onclick="submitLogin(event);" id="login-btn" tabindex="3" type="submit">Log In</button>
   </div>
-</form>
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram Bot API Example</title>
